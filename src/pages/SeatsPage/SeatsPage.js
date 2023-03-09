@@ -3,11 +3,14 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
 import Seat from "../../components/Seat";
+import FormPurchase from "../../components/FormPurchase";
 
 export default function SeatsPage() {
   const { idSessao } = useParams();
   const [sessaoInfo, setSessaoInfo] = useState(undefined);
   const [assentosReservados, setAssentosReservados] = useState([]);
+  const [nome, setNome] = useState("");
+  const [cpf, setCpf] = useState("");
 
   useEffect(() => {
     const url = `https://mock-api.driven.com.br/api/v8/cineflex/showtimes/${idSessao}/seats`;
@@ -18,6 +21,8 @@ export default function SeatsPage() {
     });
   }, [idSessao]);
 
+  console.log(nome);
+  console.log(cpf);
   function adicionarAssento(disponivel, idAssento) {
     if (assentosReservados.includes(idAssento)) {
       //Se assento estiver selecionado, remove a seleção
@@ -30,6 +35,25 @@ export default function SeatsPage() {
     } else {
       alert("Esse assento não está disponível");
     }
+  }
+
+  function reservarAssentos(){
+    const url = "https://mock-api.driven.com.br/api/v8/cineflex/seats/book-many";
+    const objReserva = {
+        ids: assentosReservados,
+        name: nome,
+        cpf: cpf
+    };
+    const requisicao = axios.post(url,objReserva);
+    requisicao.then((resposta) => {
+        console.log(resposta.data)
+        alert('Sucesso!');
+        //Seguir para outra página
+      });
+    requisicao.catch((erro)=>{
+        console.log(erro);
+        alert('Por favor, tente novamente.')
+    });
   }
 
   if (sessaoInfo === undefined) {
@@ -64,13 +88,7 @@ export default function SeatsPage() {
           Indisponível
         </CaptionItem>
       </CaptionContainer>
-      <FormContainer>
-        Nome do Comprador:
-        <input placeholder="Digite seu nome..." />
-        CPF do Comprador:
-        <input placeholder="Digite seu CPF..." />
-        <button>Reservar Assento(s)</button>
-      </FormContainer>
+      <FormPurchase nome={nome} setNome={setNome} cpf={cpf} setCpf={setCpf} reservarAssentos={reservarAssentos}/>      
       <FooterContainer>
         <div>
           <img src={sessaoInfo.movie.posterURL} alt="poster" />
@@ -108,20 +126,6 @@ const SeatsContainer = styled.div`
   margin-top: 20px;
 `;
 
-const FormContainer = styled.div`
-  width: calc(100vw - 40px);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin: 20px 0;
-  font-size: 18px;
-  button {
-    align-self: center;
-  }
-  input {
-    width: calc(100vw - 60px);
-  }
-`;
 const CaptionContainer = styled.div`
   display: flex;
   flex-direction: row;
