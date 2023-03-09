@@ -7,7 +7,7 @@ export default function Session({weekday, date, showtimes}){
         {weekday} - {date}
             <ButtonsContainer>
                 {showtimes.map((horario)=>(
-                    <Link key={horario.id} to="/assentos">
+                    <Link key={horario.id} to={`/assentos/${horario.id}`} >
                     <button>{horario.name}</button>
                   </Link>
                 ))}

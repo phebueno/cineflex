@@ -1,30 +1,49 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom"
 import styled from "styled-components"
+import axios from "axios";
+import Seat from "../../components/Seat";
 
 export default function SeatsPage() {
 
+    const {idSessao} = useParams();
+    const [sessaoInfo, setSessaoInfo] = useState(undefined);
+
+    useEffect(()=>{
+        const url = `https://mock-api.driven.com.br/api/v8/cineflex/showtimes/${idSessao}/seats`;
+        const requisicao = axios.get(url);
+
+        requisicao.then((resposta)=>{
+            console.log(resposta.data);
+            setSessaoInfo(resposta.data);
+        });
+    },[idSessao]);
+
+    if(sessaoInfo===undefined){
+        return(
+            <div>Carregando...</div>
+        )
+    }
     return (
         <PageContainer>
             Selecione o(s) assento(s)
-
             <SeatsContainer>
-                <SeatItem>01</SeatItem>
-                <SeatItem>02</SeatItem>
-                <SeatItem>03</SeatItem>
-                <SeatItem>04</SeatItem>
-                <SeatItem>05</SeatItem>
-            </SeatsContainer>
+            {sessaoInfo.seats.map((assento)=>(
+                <Seat key={assento.id} numeroAssento={assento.name} disponivel={assento.isAvailable}/>
+            ))}
+            </SeatsContainer>           
 
             <CaptionContainer>
                 <CaptionItem>
-                    <CaptionCircle />
+                    <CaptionCircle id="selecionado"/>
                     Selecionado
                 </CaptionItem>
                 <CaptionItem>
-                    <CaptionCircle />
+                    <CaptionCircle disponivel={true}/>
                     Disponível
                 </CaptionItem>
                 <CaptionItem>
-                    <CaptionCircle />
+                    <CaptionCircle disponivel={false} />
                     Indisponível
                 </CaptionItem>
             </CaptionContainer>
@@ -41,11 +60,11 @@ export default function SeatsPage() {
 
             <FooterContainer>
                 <div>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster" />
+                    <img src={sessaoInfo.movie.posterURL} alt="poster" />
                 </div>
                 <div>
-                    <p>Tudo em todo lugar ao mesmo tempo</p>
-                    <p>Sexta - 14h00</p>
+                    <p>{sessaoInfo.movie.title}</p>
+                    <p>{sessaoInfo.day.weekday} - {sessaoInfo.name}</p>
                 </div>
             </FooterContainer>
 
@@ -74,6 +93,7 @@ const SeatsContainer = styled.div`
     justify-content: center;
     margin-top: 20px;
 `
+
 const FormContainer = styled.div`
     width: calc(100vw - 40px); 
     display: flex;
@@ -96,8 +116,10 @@ const CaptionContainer = styled.div`
     margin: 20px;
 `
 const CaptionCircle = styled.div`
-    border: 1px solid blue;         // Essa cor deve mudar
-    background-color: lightblue;    // Essa cor deve mudar
+    border-color: ${({disponivel}) => disponivel ? "#808F9D":"#F7C52B"}; // cores que mudam de acordo com disponibilidade
+    background-color: ${({disponivel}) => disponivel ? "#C3CFD9":"#FBE192"};
+    border-width: 1px;
+    border-style: solid;
     height: 25px;
     width: 25px;
     border-radius: 25px;
@@ -105,25 +127,17 @@ const CaptionCircle = styled.div`
     align-items: center;
     justify-content: center;
     margin: 5px 3px;
+    //ID para selecionar assento. Poderá ser alterado
+    &#selecionado{
+        border-color: #1AAE9E;
+        background-color: #1AAE9E;
+    }
 `
 const CaptionItem = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
     font-size: 12px;
-`
-const SeatItem = styled.div`
-    border: 1px solid blue;         // Essa cor deve mudar
-    background-color: lightblue;    // Essa cor deve mudar
-    height: 25px;
-    width: 25px;
-    border-radius: 25px;
-    font-family: 'Roboto';
-    font-size: 11px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 5px 3px;
 `
 const FooterContainer = styled.div`
     width: 100%;
