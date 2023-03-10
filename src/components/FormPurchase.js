@@ -6,6 +6,7 @@ export default function FormPurchase({ nome, setNome, cpf, setCpf, reservarAssen
       <form onSubmit={reservarAssentos}>
       Nome do Comprador:
       <input
+        data-test="client-name"
         type="text"
         placeholder="Digite seu nome..."
         onChange={(e) => setNome(e.target.value)}
@@ -14,13 +15,14 @@ export default function FormPurchase({ nome, setNome, cpf, setCpf, reservarAssen
       />
       CPF do Comprador:
       <input
+        data-test="client-cpf"
         type="text"
         placeholder="Digite seu CPF..."
         onChange={(e) => setCpf(e.target.value)}
         value={cpf}
         required
       />
-      <button type="submit">Reservar Assento(s)</button>
+      <button data-test="book-seat-btn" type="submit">Reservar Assento(s)</button>
       </form>
     </FormContainer>
   );

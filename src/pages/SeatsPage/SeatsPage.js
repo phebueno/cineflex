@@ -113,7 +113,7 @@ export default function SeatsPage({ compraSucessoInfo, setCompraSucessoInfo }) {
         setCpf={setCpf}
         reservarAssentos={reservarAssentos}
       />
-      <FooterContainer>
+      <FooterContainer data-test="footer">
         <div>
           <img src={sessaoInfo.movie.posterURL} alt="poster" />
         </div>

@@ -5,29 +5,33 @@ export default function SuccessPage({compraSucessoInfo}) {
     console.log(compraSucessoInfo);
     const {assentos,cpf,diaFilme,horarioFilme,nomeComprador,nomeFilme} = compraSucessoInfo;
 
+    if (Object.keys(compraSucessoInfo).length===0){
+        return <div>Carregando...</div>
+    }
+
     return (
         <PageContainer>
             <h1>Pedido feito <br /> com sucesso!</h1>
 
-            <TextContainer>
+            <TextContainer data-test="movie-info">
                 <strong><p>Filme e sessão</p></strong>
                 <p>{nomeFilme}</p>
                 <p>{diaFilme} - {horarioFilme}</p>
             </TextContainer>
 
-            <TextContainer>
+            <TextContainer data-test="seats-info">
                 <strong><p>Ingressos</p></strong>
                 {assentos.map((assentoNr,index)=>(
                     <p key={index}>Assento {assentoNr}</p>
                 ))}
             </TextContainer>
 
-            <TextContainer>
+            <TextContainer data-test="client-info">
                 <strong><p>Comprador</p></strong>
                 <p>Nome: {nomeComprador}</p>
                 <p>CPF: {cpf}</p>
             </TextContainer>
-            <Link to="/"><button>Voltar para Home</button></Link>
+            <Link data-test="go-home-btn" to="/"><button>Voltar para Home</button></Link>
         </PageContainer>
     )
 }

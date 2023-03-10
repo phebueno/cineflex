@@ -30,7 +30,7 @@ export default function SessionsPage() {
           <Session key={day.id} weekday={day.weekday} date ={day.date} showtimes={day.showtimes}/>
         ))}
       </div>
-      <FooterContainer>
+      <FooterContainer data-test="footer">
         <div>
           <img src={sessao.posterURL} alt="poster" />
         </div>

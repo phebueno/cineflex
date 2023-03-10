@@ -9,6 +9,7 @@ export default function Seat({
 }) {
   return (
     <SeatItem
+      data-test="seat"
       onClick={() => adicionarAssento(disponivel, idAssento, numeroAssento)}
       disponivel={disponivel}
       assentosReservados={assentosReservados}
