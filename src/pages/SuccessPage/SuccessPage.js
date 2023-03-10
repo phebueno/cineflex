@@ -1,9 +1,15 @@
 import { Link } from "react-router-dom"
 import styled from "styled-components"
+import { useEffect } from "react";
 
 export default function SuccessPage({compraSucessoInfo}) {
     console.log(compraSucessoInfo);
     const {assentos,cpf,diaFilme,horarioFilme,nomeComprador,nomeFilme} = compraSucessoInfo;
+
+    //Scrolla para o começo no carregamento da página
+    useEffect(() => {
+        window.scrollTo(0, 0)
+      }, [])
 
     if (Object.keys(compraSucessoInfo).length===0){
         return <div>Carregando...</div>

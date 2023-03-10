@@ -2,8 +2,7 @@ import styled from "styled-components";
 
 export default function FormPurchase({ nome, setNome, cpf, setCpf, reservarAssentos }) {
   return (
-    <FormContainer>
-      <form onSubmit={reservarAssentos}>
+    <FormContainer onSubmit={reservarAssentos}>
       Nome do Comprador:
       <input
         data-test="client-name"
@@ -23,12 +22,11 @@ export default function FormPurchase({ nome, setNome, cpf, setCpf, reservarAssen
         required
       />
       <button data-test="book-seat-btn" type="submit">Reservar Assento(s)</button>
-      </form>
     </FormContainer>
   );
 }
 
-const FormContainer = styled.div`
+const FormContainer = styled.form`
   width: calc(100vw - 40px);
   display: flex;
   flex-direction: column;
