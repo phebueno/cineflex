@@ -3,12 +3,14 @@ import styled from "styled-components";
 export default function FormPurchase({ nome, setNome, cpf, setCpf, reservarAssentos }) {
   return (
     <FormContainer>
+      <form onSubmit={reservarAssentos}>
       Nome do Comprador:
       <input
         type="text"
         placeholder="Digite seu nome..."
         onChange={(e) => setNome(e.target.value)}
         value={nome}
+        required
       />
       CPF do Comprador:
       <input
@@ -16,8 +18,10 @@ export default function FormPurchase({ nome, setNome, cpf, setCpf, reservarAssen
         placeholder="Digite seu CPF..."
         onChange={(e) => setCpf(e.target.value)}
         value={cpf}
+        required
       />
-      <button onClick={reservarAssentos}>Reservar Assento(s)</button>
+      <button type="submit">Reservar Assento(s)</button>
+      </form>
     </FormContainer>
   );
 }

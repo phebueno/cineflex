@@ -1,6 +1,9 @@
+import { Link } from "react-router-dom"
 import styled from "styled-components"
 
-export default function SuccessPage() {
+export default function SuccessPage({compraSucessoInfo}) {
+    console.log(compraSucessoInfo);
+    const {assentos,cpf,diaFilme,horarioFilme,nomeComprador,nomeFilme} = compraSucessoInfo;
 
     return (
         <PageContainer>
@@ -8,24 +11,23 @@ export default function SuccessPage() {
 
             <TextContainer>
                 <strong><p>Filme e sessão</p></strong>
-                <p>Tudo em todo lugar ao mesmo tempo</p>
-                <p>03/03/2023 - 14:00</p>
+                <p>{nomeFilme}</p>
+                <p>{diaFilme} - {horarioFilme}</p>
             </TextContainer>
 
             <TextContainer>
                 <strong><p>Ingressos</p></strong>
-                <p>Assento 01</p>
-                <p>Assento 02</p>
-                <p>Assento 03</p>
+                {assentos.map((assentoNr,index)=>(
+                    <p key={index}>Assento {assentoNr}</p>
+                ))}
             </TextContainer>
 
             <TextContainer>
                 <strong><p>Comprador</p></strong>
-                <p>Nome: Letícia Chijo</p>
-                <p>CPF: 123.456.789-10</p>
+                <p>Nome: {nomeComprador}</p>
+                <p>CPF: {cpf}</p>
             </TextContainer>
-
-            <button>Voltar para Home</button>
+            <Link to="/"><button>Voltar para Home</button></Link>
         </PageContainer>
     )
 }

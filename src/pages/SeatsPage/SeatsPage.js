@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
 import Seat from "../../components/Seat";
 import FormPurchase from "../../components/FormPurchase";
 
-export default function SeatsPage() {
+export default function SeatsPage({ compraSucessoInfo, setCompraSucessoInfo }) {
   const { idSessao } = useParams();
   const [sessaoInfo, setSessaoInfo] = useState(undefined);
   const [assentosReservados, setAssentosReservados] = useState([]);
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const url = `https://mock-api.driven.com.br/api/v8/cineflex/showtimes/${idSessao}/seats`;
@@ -18,41 +19,58 @@ export default function SeatsPage() {
 
     requisicao.then((resposta) => {
       setSessaoInfo(resposta.data);
+      console.log(resposta.data);
     });
   }, [idSessao]);
 
-  console.log(nome);
-  console.log(cpf);
-  function adicionarAssento(disponivel, idAssento) {
+    function adicionarAssento(disponivel, idAssento, numeroAssento) {
     if (assentosReservados.includes(idAssento)) {
       //Se assento estiver selecionado, remove a seleção
-      const novoArray = assentosReservados.filter((value) => value !== idAssento);
+      const novoArray = assentosReservados.filter(
+        (value) => value !== idAssento
+      );
       setAssentosReservados([...novoArray]);
     } else if (disponivel) {
       //Se estiver disponível
       setAssentosReservados([...assentosReservados, idAssento]);
-      console.log(assentosReservados);
     } else {
       alert("Esse assento não está disponível");
     }
   }
 
-  function reservarAssentos(){
-    const url = "https://mock-api.driven.com.br/api/v8/cineflex/seats/book-many";
+  function reservarAssentos(e) {
+    e.preventDefault(); //não atualiza a página
+    const url =
+      "https://mock-api.driven.com.br/api/v8/cineflex/seats/book-many";
     const objReserva = {
-        ids: assentosReservados,
-        name: nome,
-        cpf: cpf
+      ids: assentosReservados,
+      name: nome,
+      cpf: cpf,
     };
-    const requisicao = axios.post(url,objReserva);
+    const requisicao = axios.post(url, objReserva);
     requisicao.then((resposta) => {
-        console.log(resposta.data)
-        alert('Sucesso!');
-        //Seguir para outra página
-      });
-    requisicao.catch((erro)=>{
-        console.log(erro);
-        alert('Por favor, tente novamente.')
+      console.log(resposta.data);
+      /*
+      Na função abaixo, obtém os números dos assentos reservados a partir dos números ID.
+      Verifica se o array de IDs de assento contém quais assentos da sessão. Se sim, devolve
+      o número de 1-50 do assento.
+      */
+      const arrAssentosNr = sessaoInfo.seats.filter((seat) => assentosReservados.includes(seat.id)).map((seat)=>seat.name);
+      //A variável objCompraInfo envia todas as informações necessárias para a tela de sucesso
+      const objCompraInfo = {
+        nomeFilme: sessaoInfo.movie.title,
+        diaFilme: sessaoInfo.day.date,
+        horarioFilme: sessaoInfo.name,
+        assentos: arrAssentosNr,
+        nomeComprador: nome,
+        cpf: cpf,
+      };
+      setCompraSucessoInfo({ ...objCompraInfo });
+      navigate("/sucesso");
+    });
+    requisicao.catch((erro) => {
+      console.log(erro.response.data);
+      alert("Por favor, tente novamente.");
     });
   }
 
@@ -88,7 +106,13 @@ export default function SeatsPage() {
           Indisponível
         </CaptionItem>
       </CaptionContainer>
-      <FormPurchase nome={nome} setNome={setNome} cpf={cpf} setCpf={setCpf} reservarAssentos={reservarAssentos}/>      
+      <FormPurchase
+        nome={nome}
+        setNome={setNome}
+        cpf={cpf}
+        setCpf={setCpf}
+        reservarAssentos={reservarAssentos}
+      />
       <FooterContainer>
         <div>
           <img src={sessaoInfo.movie.posterURL} alt="poster" />
@@ -150,7 +174,7 @@ const CaptionCircle = styled.div`
   margin: 5px 3px;
   //ID para selecionar assento. Poderá ser alterado
   &#selecionado {
-    border-color: #0E7D71;
+    border-color: #0e7d71;
     background-color: #1aae9e;
   }
 `;

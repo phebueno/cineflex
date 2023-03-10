@@ -9,7 +9,7 @@ export default function Seat({
 }) {
   return (
     <SeatItem
-      onClick={() => adicionarAssento(disponivel, idAssento)}
+      onClick={() => adicionarAssento(disponivel, idAssento, numeroAssento)}
       disponivel={disponivel}
       assentosReservados={assentosReservados}
       idAssento={idAssento}
