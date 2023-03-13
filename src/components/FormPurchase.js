@@ -26,9 +26,12 @@ export default function FormPurchase({
             setCompradores={setCompradores}
           />
         ))}
-      <button data-test="book-seat-btn" type="submit">
-        Reservar Assento(s)
-      </button>
+
+      {assentosReservados.length !== 0 && (
+        <button data-test="book-seat-btn" type="submit">
+          Reservar Assento(s)
+        </button>
+      )}
     </FormContainer>
   );
 }

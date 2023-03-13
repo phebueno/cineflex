@@ -1,6 +1,8 @@
 export default function Buyer({ index, assentoNr, compradores, comprador, setCompradores }) {
   
   const handleChange = (index) => (e) => {
+    let validado = true;
+    const re = /^[0-9\b]+$/;  
     const newArray = compradores.map((item, i) => {
       if (index === i) {
         return { ...item, [e.target.name]: e.target.value };
@@ -9,10 +11,15 @@ export default function Buyer({ index, assentoNr, compradores, comprador, setCom
         return item;
       }
     });
-    setCompradores(newArray);
+    if(e.target.name==='cpf'){ //permitir apenas números
+        
+      if(!(re.test(e.target.value))){
+        validado=false;
+      }
+    };
+    validado === true && setCompradores(newArray); //apenas se ocorrer validação para números
   };
 
-  console.log(compradores);
   return (
     <div key={index}>
       Nome do Comprador {assentoNr}:
@@ -21,7 +28,7 @@ export default function Buyer({ index, assentoNr, compradores, comprador, setCom
         type="text"
         placeholder="Digite seu nome..."
         name={"nome"}
-        value={comprador.nome} //evita que erro de input controlado/descontrolado aconteça
+        value={comprador.nome}
         onChange={handleChange(index)}
         required
       />
@@ -31,7 +38,7 @@ export default function Buyer({ index, assentoNr, compradores, comprador, setCom
         type="text"
         placeholder="Digite seu CPF..."
         name={"cpf"}
-        value={comprador.cpf} //evita que erro de input controlado/descontrolado aconteça
+        value={comprador.cpf} 
         onChange={handleChange(index)}
         required
       />
