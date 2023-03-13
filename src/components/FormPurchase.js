@@ -1,27 +1,34 @@
 import styled from "styled-components";
+import Buyer from "./Buyer";
 
-export default function FormPurchase({ nome, setNome, cpf, setCpf, reservarAssentos }) {
+export default function FormPurchase({
+  assentosReservados,
+  reservarAssentos,
+  assentosInfo,
+  compradores,
+  setCompradores,
+}) {
+  //TROCAR FORMA DE PEGAR NR ASSENTOS POR USESTATE
+  const arrAssentosNr = assentosInfo
+    .filter((seat) => assentosReservados.includes(seat.id))
+    .map((seat) => seat.name);
+
   return (
     <FormContainer onSubmit={reservarAssentos}>
-      Nome do Comprador:
-      <input
-        data-test="client-name"
-        type="text"
-        placeholder="Digite seu nome..."
-        onChange={(e) => setNome(e.target.value)}
-        value={nome}
-        required
-      />
-      CPF do Comprador:
-      <input
-        data-test="client-cpf"
-        type="text"
-        placeholder="Digite seu CPF..."
-        onChange={(e) => setCpf(e.target.value)}
-        value={cpf}
-        required
-      />
-      <button data-test="book-seat-btn" type="submit">Reservar Assento(s)</button>
+      {assentosReservados.length > 0 &&
+        compradores.map((comprador, index) => (
+          <Buyer
+            key={index}
+            index={index}
+            assentoNr={arrAssentosNr[index]}
+            compradores={compradores}
+            comprador={comprador}
+            setCompradores={setCompradores}
+          />
+        ))}
+      <button data-test="book-seat-btn" type="submit">
+        Reservar Assento(s)
+      </button>
     </FormContainer>
   );
 }
@@ -33,6 +40,11 @@ const FormContainer = styled.form`
   align-items: flex-start;
   margin: 20px 0;
   font-size: 18px;
+  div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
   button {
     align-self: center;
   }

@@ -5,12 +5,11 @@ import axios from "axios";
 import Seat from "../../components/Seat";
 import FormPurchase from "../../components/FormPurchase";
 
-export default function SeatsPage({ compraSucessoInfo, setCompraSucessoInfo }) {
+export default function SeatsPage({ setCompraSucessoInfo }) {
   const { idSessao } = useParams();
   const [sessaoInfo, setSessaoInfo] = useState(undefined);
   const [assentosReservados, setAssentosReservados] = useState([]);
-  const [nome, setNome] = useState("");
-  const [cpf, setCpf] = useState("");
+  const [compradores, setCompradores] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,16 +22,28 @@ export default function SeatsPage({ compraSucessoInfo, setCompraSucessoInfo }) {
     });
   }, [idSessao]);
 
-    function adicionarAssento(disponivel, idAssento, numeroAssento) {
+  function adicionarAssento(disponivel, idAssento) {
     if (assentosReservados.includes(idAssento)) {
-      //Se assento estiver selecionado, remove a seleção
-      const novoArray = assentosReservados.filter(
-        (value) => value !== idAssento
-      );
-      setAssentosReservados([...novoArray]);
+      //Se assento estiver selecionado, pergunta ao usuário se quer remover:
+      const resposta = window.confirm("O assento já está selecionado. Deseja remover este assento?");
+      if (resposta === true){
+        const excluidoAssento = assentosReservados.filter(
+          (value) => value !== idAssento
+        );
+        setAssentosReservados([...excluidoAssento]);
+        
+        //Remove da lista de compradores
+        const excluidoComprador = compradores.filter(
+          (value) => value.idAssento !== idAssento
+        );
+        setCompradores([...excluidoComprador]);
+      }      
     } else if (disponivel) {
       //Se estiver disponível
       setAssentosReservados([...assentosReservados, idAssento]);
+      //Prepara modelo para adição de comprador
+      const objComprador = { idAssento: idAssento, nome: "", cpf: "" };
+      setCompradores([...compradores,objComprador]);
     } else {
       alert("Esse assento não está disponível");
     }
@@ -44,8 +55,7 @@ export default function SeatsPage({ compraSucessoInfo, setCompraSucessoInfo }) {
       "https://mock-api.driven.com.br/api/v8/cineflex/seats/book-many";
     const objReserva = {
       ids: assentosReservados,
-      name: nome,
-      cpf: cpf,
+      compradores: compradores
     };
     const requisicao = axios.post(url, objReserva);
     requisicao.then((resposta) => {
@@ -55,15 +65,16 @@ export default function SeatsPage({ compraSucessoInfo, setCompraSucessoInfo }) {
       Verifica se o array de IDs de assento contém quais assentos da sessão. Se sim, devolve
       o número de 1-50 do assento.
       */
-      const arrAssentosNr = sessaoInfo.seats.filter((seat) => assentosReservados.includes(seat.id)).map((seat)=>seat.name);
+      const arrAssentosNr = sessaoInfo.seats
+        .filter((seat) => assentosReservados.includes(seat.id))
+        .map((seat) => seat.name);
       //A variável objCompraInfo envia todas as informações necessárias para a tela de sucesso
       const objCompraInfo = {
         nomeFilme: sessaoInfo.movie.title,
         diaFilme: sessaoInfo.day.date,
         horarioFilme: sessaoInfo.name,
         assentos: arrAssentosNr,
-        nomeComprador: nome,
-        cpf: cpf,
+        compradores:compradores
       };
       setCompraSucessoInfo({ ...objCompraInfo });
       navigate("/sucesso");
@@ -107,11 +118,11 @@ export default function SeatsPage({ compraSucessoInfo, setCompraSucessoInfo }) {
         </CaptionItem>
       </CaptionContainer>
       <FormPurchase
-        nome={nome}
-        setNome={setNome}
-        cpf={cpf}
-        setCpf={setCpf}
+        assentosReservados={assentosReservados}
         reservarAssentos={reservarAssentos}
+        assentosInfo={sessaoInfo.seats}
+        compradores={compradores}
+        setCompradores={setCompradores}
       />
       <FooterContainer data-test="footer">
         <div>
